@@ -4,42 +4,47 @@ package dev.journalsmp.mixin;
 import dev.journalsmp.JournalItems;
 import dev.journalsmp.JournalKind;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.DataComponents;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(LivingEntity.class)
+@Mixin(Item.class)
 public abstract class PlayerExtraSaturationMixin {
 
-    @Inject(method = "eat", at = @At("TAIL"))
+    @Inject(method = "finishUsingItem", at = @At("TAIL"))
     private void journalsmp$grantExtraSaturation(
-            Level level,
             ItemStack stack,
-            FoodProperties foodProperties,
-            CallbackInfo callback
+            Level level,
+            LivingEntity user,
+            CallbackInfoReturnable<ItemStack> callback
     ) {
-        LivingEntity entity = (LivingEntity) (Object) this;
-
-        if (!level.isClientSide()
-                && entity instanceof ServerPlayer serverPlayer
-                && JournalItems.kindOf(serverPlayer.getOffhandItem()) == JournalKind.ARBY) {
-
-            float extraSaturation =
-                    foodProperties.nutrition() * foodProperties.saturation();
-
-            var foodData = serverPlayer.getFoodData();
-
-            foodData.setSaturation(
-                    Math.min(
-                            foodData.getFoodLevel(),
-                            foodData.getSaturationLevel() + extraSaturation
-                    )
-            );
+        if (level.isClientSide()
+                || !(user instanceof ServerPlayer player)
+                || JournalItems.kindOf(player.getOffhandItem()) != JournalKind.ARBY) {
+            return;
         }
+
+        FoodProperties food = stack.get(DataComponents.FOOD);
+        if (food == null) {
+            return;
+        }
+
+        float extraSaturation = food.nutrition() * food.saturation();
+        var foodData = player.getFoodData();
+
+        foodData.setSaturation(
+                Math.min(
+                        foodData.getFoodLevel(),
+                        foodData.getSaturationLevel() + extraSaturation
+                )
+        );
     }
 }
+
