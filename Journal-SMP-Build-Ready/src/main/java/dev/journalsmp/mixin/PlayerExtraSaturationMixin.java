@@ -5,7 +5,7 @@ import dev.journalsmp.JournalItems;
 import dev.journalsmp.JournalKind;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.DataComponents;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
