@@ -21,8 +21,12 @@ public abstract class PlayerExtraSaturationMixin {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer
                 && JournalItems.kindOf(serverPlayer.getOffhandItem()) == JournalKind.ARBY) {
             // Vanilla's saturation contribution is nutrition * modifier * 2; add half of that.
-            float extraSaturation = foodProperties.nutrition() * foodProperties.saturation();
-            serverPlayer.getFoodData().addSaturation(extraSaturation);
-        }
-    }
-}
+float extraSaturation = foodProperties.nutrition() * foodProperties.saturation();
+
+var foodData = serverPlayer.getFoodData();
+foodData.setSaturation(
+    Math.min(
+        foodData.getFoodLevel(),
+        foodData.getSaturationLevel() + extraSaturation
+    )
+);
