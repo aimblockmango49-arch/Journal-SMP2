@@ -1,3 +1,4 @@
+
 package dev.journalsmp.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
@@ -12,13 +13,17 @@ import org.lwjgl.glfw.GLFW;
 
 public final class UltimateKeybind {
     private static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(
-            Identifier.fromNamespaceAndPath(JournalSmpMod.MOD_ID, "key_categories"));
-KeyBindingHelper.registerKeyBinding(
-            "key.journalsmp.activate_ultimate",
-            InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_R,
-            CATEGORY
-    ));
+            Identifier.fromNamespaceAndPath(JournalSmpMod.MOD_ID, "key_categories")
+    );
+
+    private static final KeyMapping ACTIVATE = KeyBindingHelper.registerKeyBinding(
+            new KeyMapping(
+                    "key.journalsmp.activate_ultimate",
+                    InputConstants.Type.KEYSYM,
+                    GLFW.GLFW_KEY_R,
+                    CATEGORY
+            )
+    );
 
     private UltimateKeybind() {
     }
